@@ -1,0 +1,4 @@
+/movie-booking/backend/vendor/
+/movie-booking/frontend/node_modules/
+/movie-booking/frontend/dist/
+*.sqlite

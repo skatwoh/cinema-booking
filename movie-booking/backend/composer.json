@@ -1,0 +1,16 @@
+{
+    "name": "movie-booking/backend",
+    "description": "Backend for movie booking",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Jules",
+            "email": "jules@example.com"
+        }
+    ],
+    "require": {
+        "slim/slim": "4.*",
+        "slim/psr7": "^1.8",
+        "tuupola/cors-middleware": "^1.5"
+    }
+}
