@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Film, Calendar, Clock, MapPin, ChevronLeft, CheckCircle } from 'lucide-react';
+import { Film, Calendar, Clock, MapPin, ChevronLeft, CheckCircle, Search, User, Menu } from 'lucide-react';
 
 const API_BASE_URL = 'http://localhost:8000/api';
 
@@ -51,6 +51,7 @@ const App = () => {
     setSelectedShowtime(null);
     setSelectedSeat(null);
     setBookingStatus(null);
+    window.scrollTo(0, 0);
   };
 
   const handleShowtimeSelect = (showtime) => {
@@ -77,18 +78,18 @@ const App = () => {
 
   if (bookingStatus === 'success') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-gray-800 p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-[#fdfcf0]">
+        <div className="bg-white p-8 rounded-lg shadow-xl border border-gray-200 max-w-md w-full text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Đặt vé thành công!</h2>
-          <p className="text-gray-400 mb-6">Cảm ơn {customerInfo.name}. Thông tin vé đã được gửi đến {customerInfo.email}.</p>
+          <h2 className="text-2xl font-bold mb-2 text-gray-800">Đặt vé thành công!</h2>
+          <p className="text-gray-600 mb-6">Cảm ơn {customerInfo.name}. Thông tin vé đã được gửi đến {customerInfo.email}.</p>
           <button
             onClick={() => {
               setSelectedMovie(null);
               setBookingStatus(null);
               setCustomerInfo({ name: '', email: '' });
             }}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 py-3 rounded-lg font-semibold transition"
+            className="w-full bg-[#e71a0f] hover:bg-[#c4160d] text-white py-3 rounded font-bold transition"
           >
             Quay lại trang chủ
           </button>
@@ -98,131 +99,222 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <header className="max-w-6xl mx-auto mb-12 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-indigo-500 flex items-center gap-2">
-          <Film /> MovieBooking
-        </h1>
+    <div className="min-h-screen flex flex-col">
+      {/* Header CGV Style */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 h-20 flex justify-between items-center">
+          <div className="flex items-center gap-8">
+            <h1
+              className="text-4xl font-black text-[#e71a0f] cursor-pointer tracking-tighter"
+              onClick={() => setSelectedMovie(null)}
+            >
+              CGV
+            </h1>
+            <nav className="hidden md:flex gap-6 font-bold text-gray-700 uppercase text-sm">
+              <a href="#" className="hover:text-[#e71a0f]">Lịch chiếu</a>
+              <a href="#" className="hover:text-[#e71a0f]">Phim</a>
+              <a href="#" className="hover:text-[#e71a0f]">Rạp</a>
+              <a href="#" className="hover:text-[#e71a0f]">Thành viên</a>
+            </nav>
+          </div>
+          <div className="flex items-center gap-4 text-gray-600">
+            <Search size={20} className="cursor-pointer hover:text-[#e71a0f]" />
+            <User size={20} className="cursor-pointer hover:text-[#e71a0f]" />
+            <Menu size={20} className="md:hidden cursor-pointer" />
+          </div>
+        </div>
       </header>
 
-      <main className="max-w-6xl mx-auto">
+      <main className="flex-1">
         {!selectedMovie ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {movies.map(movie => (
-              <div
-                key={movie.id}
-                className="bg-gray-800 rounded-xl overflow-hidden shadow-lg cursor-pointer transform hover:scale-105 transition"
-                onClick={() => handleMovieSelect(movie)}
-              >
-                <img src={movie.poster_url} alt={movie.title} className="w-full h-96 object-cover" />
-                <div className="p-4">
-                  <h3 className="text-xl font-bold mb-2">{movie.title}</h3>
-                  <div className="flex items-center text-gray-400 text-sm gap-4">
-                    <span className="flex items-center gap-1"><Clock size={14}/> {movie.duration} phút</span>
-                  </div>
-                </div>
+          <>
+            {/* Hero Banner Placeholder */}
+            <div className="bg-black w-full h-[400px] relative overflow-hidden hidden md:block">
+              <img
+                src="https://image.tmdb.org/t/p/original/t6Sna4_Y7LfaZ1Iolv3ZqZp9ZpP.jpg"
+                className="w-full h-full object-cover opacity-60"
+                alt="Banner"
+              />
+              <div className="absolute inset-0 flex flex-col justify-center items-center text-white p-4">
+                <h2 className="text-5xl font-bold mb-4">Avatar: The Way of Water</h2>
+                <p className="text-xl max-w-2xl text-center mb-8">Trải nghiệm siêu phẩm điện ảnh đỉnh cao tại CGV.</p>
+                <button
+                   onClick={() => handleMovieSelect(movies[0])}
+                   className="bg-[#e71a0f] text-white px-8 py-3 font-bold rounded uppercase hover:bg-white hover:text-[#e71a0f] transition"
+                >
+                  Đặt vé ngay
+                </button>
               </div>
-            ))}
-          </div>
+            </div>
+
+            <div className="max-w-6xl mx-auto px-4 py-12">
+              <div className="flex items-center gap-4 mb-8 border-b-2 border-gray-800 pb-2">
+                <h2 className="text-2xl font-bold uppercase tracking-widest border-b-4 border-[#e71a0f] pb-2 -mb-[10px]">Phim đang chiếu</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                {movies.map(movie => (
+                  <div key={movie.id} className="group">
+                    <div className="relative overflow-hidden rounded shadow-lg bg-black aspect-[2/3]">
+                      <img
+                        src={movie.poster_url}
+                        alt={movie.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition duration-500 opacity-90 group-hover:opacity-100"
+                      />
+                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
+                        <button
+                          onClick={() => handleMovieSelect(movie)}
+                          className="bg-[#e71a0f] text-white px-6 py-2 font-bold rounded uppercase border border-[#e71a0f] hover:bg-transparent transition"
+                        >
+                          Mua vé
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mt-4 text-center">
+                      <h3 className="text-lg font-bold text-gray-800 truncate px-2">{movie.title}</h3>
+                      <p className="text-sm text-gray-500 mt-1">{movie.duration} phút</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
         ) : (
-          <div className="bg-gray-800 rounded-2xl p-6 md:p-8 shadow-2xl">
+          <div className="max-w-6xl mx-auto px-4 py-8">
             <button
               onClick={() => setSelectedMovie(null)}
-              className="flex items-center text-gray-400 hover:text-white mb-6 transition"
+              className="flex items-center text-gray-500 hover:text-[#e71a0f] mb-8 font-bold transition uppercase text-sm"
             >
-              <ChevronLeft /> Quay lại
+              <ChevronLeft size={18} /> Quay lại
             </button>
 
-            <div className="flex flex-col md:flex-row gap-8">
-              <img src={selectedMovie.poster_url} alt={selectedMovie.title} className="w-full md:w-64 h-96 object-cover rounded-xl shadow-lg" />
-              <div className="flex-1">
-                <h2 className="text-3xl font-bold mb-4">{selectedMovie.title}</h2>
-                <p className="text-gray-400 mb-6 leading-relaxed">{selectedMovie.description}</p>
+            <div className="bg-white rounded shadow-md overflow-hidden border border-gray-200">
+              <div className="bg-[#333333] text-white p-4">
+                <h2 className="text-xl font-bold uppercase tracking-wider">{selectedMovie.title}</h2>
+              </div>
 
-                <h3 className="text-xl font-semibold mb-4">Chọn suất chiếu</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-                  {showtimes.map(st => (
-                    <button
-                      key={st.id}
-                      onClick={() => handleShowtimeSelect(st)}
-                      className={`p-3 rounded-lg border-2 transition ${
-                        selectedShowtime?.id === st.id
-                        ? 'border-indigo-500 bg-indigo-500/10'
-                        : 'border-gray-700 hover:border-gray-600'
-                      }`}
-                    >
-                      <div className="font-bold">{st.start_time.split(' ')[1]}</div>
-                      <div className="text-xs text-gray-400">{st.hall}</div>
-                      <div className="text-sm text-indigo-400 font-semibold">{st.price.toLocaleString()}đ</div>
-                    </button>
-                  ))}
-                </div>
+              <div className="p-6 flex flex-col md:flex-row gap-8">
+                <img
+                  src={selectedMovie.poster_url}
+                  alt={selectedMovie.title}
+                  className="w-full md:w-64 aspect-[2/3] object-cover rounded shadow-md border-4 border-white"
+                />
 
-                {selectedShowtime && (
-                  <div className="animate-fade-in">
-                    <h3 className="text-xl font-semibold mb-4 text-center">Chọn ghế (Màn hình ở đây)</h3>
-                    <div className="w-full h-2 bg-indigo-500/50 rounded-full mb-8 shadow-[0_0_15px_rgba(99,102,241,0.5)]"></div>
+                <div className="flex-1">
+                  <div className="mb-8">
+                    <h3 className="text-sm font-bold text-gray-400 uppercase mb-2 border-b border-gray-100 pb-1">Nội dung phim</h3>
+                    <p className="text-gray-700 leading-relaxed text-sm italic">{selectedMovie.description}</p>
+                  </div>
 
-                    <div className="grid grid-cols-8 gap-2 mb-8 max-w-sm mx-auto">
-                      {['A', 'B', 'C', 'D'].map(row =>
-                        [1, 2, 3, 4, 5, 6, 7, 8].map(num => {
-                          const seatId = `${row}${num}`;
-                          const isBooked = bookedSeats.includes(seatId);
-                          const isSelected = selectedSeat === seatId;
+                  <div className="mb-8">
+                    <h3 className="text-sm font-bold text-gray-400 uppercase mb-4 border-b border-gray-100 pb-1">Chọn suất chiếu</h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {showtimes.map(st => (
+                        <button
+                          key={st.id}
+                          onClick={() => handleShowtimeSelect(st)}
+                          className={`py-2 px-3 rounded border transition text-sm font-bold ${
+                            selectedShowtime?.id === st.id
+                            ? 'border-[#e71a0f] bg-[#e71a0f] text-white'
+                            : 'border-gray-300 hover:border-[#e71a0f] text-gray-700'
+                          }`}
+                        >
+                          <div>{st.start_time.split(' ')[1].substring(0, 5)}</div>
+                          <div className={selectedShowtime?.id === st.id ? 'text-white/80 text-[10px]' : 'text-gray-400 text-[10px]'}>{st.hall}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-                          return (
-                            <button
-                              key={seatId}
-                              disabled={isBooked}
-                              onClick={() => setSelectedSeat(seatId)}
-                              className={`h-8 w-8 rounded-md text-[10px] font-bold transition flex items-center justify-center
-                                ${isBooked ? 'bg-gray-700 text-gray-500 cursor-not-allowed' :
-                                  isSelected ? 'bg-indigo-500 text-white' :
-                                  'bg-gray-600 hover:bg-gray-500 text-gray-300'}`}
-                            >
-                              {seatId}
-                            </button>
-                          );
-                        })
+                  {selectedShowtime && (
+                    <div className="mt-8 border-t border-gray-100 pt-8 animate-in fade-in duration-500">
+                      <div className="text-center mb-8">
+                        <div className="inline-block bg-[#eeeeee] px-12 py-1 text-xs font-bold text-gray-500 rounded uppercase">Màn hình</div>
+                        <div className="h-1 w-full max-w-md mx-auto bg-gray-300 mt-2 shadow-sm"></div>
+                      </div>
+
+                      <div className="grid grid-cols-8 gap-2 mb-8 max-w-sm mx-auto">
+                        {['A', 'B', 'C', 'D'].map(row =>
+                          [1, 2, 3, 4, 5, 6, 7, 8].map(num => {
+                            const seatId = `${row}${num}`;
+                            const isBooked = bookedSeats.includes(seatId);
+                            const isSelected = selectedSeat === seatId;
+
+                            return (
+                              <button
+                                key={seatId}
+                                disabled={isBooked}
+                                onClick={() => setSelectedSeat(seatId)}
+                                className={`h-8 w-8 rounded text-[10px] font-bold transition flex items-center justify-center
+                                  ${isBooked ? 'bg-[#333333] text-gray-500 cursor-not-allowed' :
+                                    isSelected ? 'bg-[#e71a0f] text-white shadow-lg scale-110' :
+                                    'bg-white border border-gray-300 hover:border-[#e71a0f] text-gray-700'}`}
+                              >
+                                {seatId}
+                              </button>
+                            );
+                          })
+                        )}
+                      </div>
+
+                      <div className="flex justify-center gap-6 mb-8 text-[10px] font-bold uppercase text-gray-500">
+                        <div className="flex items-center gap-2"><div className="w-3 h-3 bg-white border border-gray-300 rounded"></div> Trống</div>
+                        <div className="flex items-center gap-2"><div className="w-3 h-3 bg-[#e71a0f] rounded"></div> Đang chọn</div>
+                        <div className="flex items-center gap-2"><div className="w-3 h-3 bg-[#333333] rounded"></div> Đã đặt</div>
+                      </div>
+
+                      {selectedSeat && (
+                        <form onSubmit={handleBooking} className="max-w-md mx-auto bg-[#fdfcf0] p-6 rounded border-2 border-[#e71a0f] shadow-lg">
+                          <h4 className="text-center font-bold text-[#e71a0f] uppercase mb-4 tracking-tighter">Thông tin đặt vé</h4>
+                          <div className="mb-4">
+                            <label htmlFor="name" className="block text-xs font-bold text-gray-500 uppercase mb-1">Họ tên</label>
+                            <input
+                              id="name"
+                              required
+                              type="text"
+                              className="w-full bg-white border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-[#e71a0f]"
+                              value={customerInfo.name}
+                              onChange={e => setCustomerInfo({...customerInfo, name: e.target.value})}
+                            />
+                          </div>
+                          <div className="mb-6">
+                            <label htmlFor="email" className="block text-xs font-bold text-gray-500 uppercase mb-1">Email</label>
+                            <input
+                              id="email"
+                              required
+                              type="email"
+                              className="w-full bg-white border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-[#e71a0f]"
+                              value={customerInfo.email}
+                              onChange={e => setCustomerInfo({...customerInfo, email: e.target.value})}
+                            />
+                          </div>
+                          <button className="w-full bg-[#e71a0f] hover:bg-[#c4160d] text-white py-3 rounded font-bold transition uppercase tracking-widest shadow-md">
+                            Thanh toán {(selectedShowtime.price).toLocaleString()}đ
+                          </button>
+                        </form>
                       )}
                     </div>
-
-                    {selectedSeat && (
-                      <form onSubmit={handleBooking} className="max-w-sm mx-auto bg-gray-900/50 p-6 rounded-xl border border-gray-700">
-                        <div className="mb-4">
-                          <label htmlFor="name" className="block text-sm text-gray-400 mb-1">Họ tên</label>
-                          <input
-                            id="name"
-                            required
-                            type="text"
-                            className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 focus:outline-none focus:border-indigo-500"
-                            value={customerInfo.name}
-                            onChange={e => setCustomerInfo({...customerInfo, name: e.target.value})}
-                          />
-                        </div>
-                        <div className="mb-6">
-                          <label htmlFor="email" className="block text-sm text-gray-400 mb-1">Email</label>
-                          <input
-                            id="email"
-                            required
-                            type="email"
-                            className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 focus:outline-none focus:border-indigo-500"
-                            value={customerInfo.email}
-                            onChange={e => setCustomerInfo({...customerInfo, email: e.target.value})}
-                          />
-                        </div>
-                        <button className="w-full bg-indigo-600 hover:bg-indigo-700 py-3 rounded-lg font-bold transition">
-                          Thanh toán {(selectedShowtime.price).toLocaleString()}đ
-                        </button>
-                      </form>
-                    )}
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           </div>
         )}
       </main>
+
+      {/* Footer */}
+      <footer className="bg-[#333333] text-white py-12 mt-12">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-black text-[#e71a0f] mb-4">CGV</h2>
+          <p className="text-gray-400 text-sm max-w-xl mx-auto mb-8">
+            Hệ thống rạp chiếu phim chất lượng nhất Việt Nam. Mang đến trải nghiệm điện ảnh chân thực và sống động.
+          </p>
+          <div className="flex justify-center gap-8 text-gray-400 text-xs uppercase font-bold border-t border-gray-700 pt-8">
+            <a href="#" className="hover:text-white">Điều khoản sử dụng</a>
+            <a href="#" className="hover:text-white">Chính sách bảo mật</a>
+            <a href="#" className="hover:text-white">Liên hệ</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

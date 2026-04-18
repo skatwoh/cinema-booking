@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+:root {
+  --cgv-red: #e71a0f;
+  --cgv-bg: #fdfcf0;
+  --cgv-text: #333333;
+}
+
 body {
-  @apply bg-gray-900 text-white;
+  @apply bg-[#fdfcf0] text-[#333333] font-sans;
+}
+
+.cgv-red-button {
+  @apply bg-[#e71a0f] text-white font-bold py-2 px-4 rounded hover:bg-[#c4160d] transition;
+}
+
+.cgv-card {
+  @apply bg-white border border-gray-200 shadow-sm hover:shadow-md transition;
 }
