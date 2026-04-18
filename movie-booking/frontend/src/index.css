@@ -1,19 +1,25 @@
 @import "tailwindcss";
 
-:root {
-  --cgv-red: #e71a0f;
-  --cgv-bg: #fdfcf0;
-  --cgv-text: #333333;
+@theme {
+  --color-primary: #8d7b68;
+  --color-secondary: #a4907c;
+  --color-accent: #c8b6a6;
+  --color-bg-base: #f1dec9;
+  --color-text-main: #3e3232;
 }
 
 body {
-  @apply bg-[#fdfcf0] text-[#333333] font-sans;
+  @apply bg-bg-base text-text-main font-sans;
 }
 
-.cgv-red-button {
-  @apply bg-[#e71a0f] text-white font-bold py-2 px-4 rounded hover:bg-[#c4160d] transition;
+.btn-primary {
+  @apply bg-primary hover:bg-secondary text-white px-10 py-4 font-bold uppercase tracking-widest transition-all rounded-sm shadow-xl;
 }
 
-.cgv-card {
-  @apply bg-white border border-gray-200 shadow-sm hover:shadow-md transition;
+.section-title {
+  @apply text-4xl font-serif text-text-main mb-6;
+}
+
+.nav-link {
+  @apply text-sm uppercase tracking-widest text-text-main hover:text-primary transition-colors font-bold;
 }

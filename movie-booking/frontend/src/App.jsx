@@ -1,319 +1,255 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Film, Calendar, Clock, MapPin, ChevronLeft, CheckCircle, Search, User, Menu } from 'lucide-react';
-
-const API_BASE_URL = 'http://localhost:8000/api';
+import React, { useState } from 'react';
+import {
+  Search,
+  ShoppingCart,
+  Menu,
+  X,
+  ChevronRight,
+  Quote,
+  Share2
+} from 'lucide-react';
 
 const App = () => {
-  const [movies, setMovies] = useState([]);
-  const [selectedMovie, setSelectedMovie] = useState(null);
-  const [showtimes, setShowtimes] = useState([]);
-  const [selectedShowtime, setSelectedShowtime] = useState(null);
-  const [bookedSeats, setBookedSeats] = useState([]);
-  const [selectedSeat, setSelectedSeat] = useState(null);
-  const [bookingStatus, setBookingStatus] = useState(null);
-  const [customerInfo, setCustomerInfo] = useState({ name: '', email: '' });
-
-  useEffect(() => {
-    fetchMovies();
-  }, []);
-
-  const fetchMovies = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/movies`);
-      setMovies(response.data);
-    } catch (error) {
-      console.error("Error fetching movies", error);
-    }
-  };
-
-  const fetchShowtimes = async (movieId) => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/showtimes/${movieId}`);
-      setShowtimes(response.data);
-    } catch (error) {
-      console.error("Error fetching showtimes", error);
-    }
-  };
-
-  const fetchBookedSeats = async (showtimeId) => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/bookings/${showtimeId}`);
-      setBookedSeats(response.data);
-    } catch (error) {
-      console.error("Error fetching booked seats", error);
-    }
-  };
-
-  const handleMovieSelect = (movie) => {
-    setSelectedMovie(movie);
-    fetchShowtimes(movie.id);
-    setSelectedShowtime(null);
-    setSelectedSeat(null);
-    setBookingStatus(null);
-    window.scrollTo(0, 0);
-  };
-
-  const handleShowtimeSelect = (showtime) => {
-    setSelectedShowtime(showtime);
-    fetchBookedSeats(showtime.id);
-    setSelectedSeat(null);
-  };
-
-  const handleBooking = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post(`${API_BASE_URL}/bookings`, {
-        showtime_id: selectedShowtime.id,
-        seat_number: selectedSeat,
-        customer_name: customerInfo.name,
-        customer_email: customerInfo.email
-      });
-      setBookingStatus('success');
-    } catch (error) {
-      console.error("Booking failed", error);
-      setBookingStatus('error');
-    }
-  };
-
-  if (bookingStatus === 'success') {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-[#fdfcf0]">
-        <div className="bg-white p-8 rounded-lg shadow-xl border border-gray-200 max-w-md w-full text-center">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2 text-gray-800">Đặt vé thành công!</h2>
-          <p className="text-gray-600 mb-6">Cảm ơn {customerInfo.name}. Thông tin vé đã được gửi đến {customerInfo.email}.</p>
-          <button
-            onClick={() => {
-              setSelectedMovie(null);
-              setBookingStatus(null);
-              setCustomerInfo({ name: '', email: '' });
-            }}
-            className="w-full bg-[#e71a0f] hover:bg-[#c4160d] text-white py-3 rounded font-bold transition"
-          >
-            Quay lại trang chủ
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header CGV Style */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 h-20 flex justify-between items-center">
-          <div className="flex items-center gap-8">
-            <h1
-              className="text-4xl font-black text-[#e71a0f] cursor-pointer tracking-tighter"
-              onClick={() => setSelectedMovie(null)}
-            >
-              CGV
-            </h1>
-            <nav className="hidden md:flex gap-6 font-bold text-gray-700 uppercase text-sm">
-              <a href="#" className="hover:text-[#e71a0f]">Lịch chiếu</a>
-              <a href="#" className="hover:text-[#e71a0f]">Phim</a>
-              <a href="#" className="hover:text-[#e71a0f]">Rạp</a>
-              <a href="#" className="hover:text-[#e71a0f]">Thành viên</a>
-            </nav>
+    <div className="min-h-screen flex flex-col font-sans text-text-main">
+      {/* Top Bar */}
+      <div className="bg-primary text-white py-2 px-4 md:px-12 flex justify-between items-center text-xs">
+        <div className="flex gap-4">
+          <Share2 size={16} className="cursor-pointer hover:opacity-80" />
+          <span className="hidden sm:inline">Facebook</span>
+          <span className="hidden sm:inline">Instagram</span>
+          <span className="hidden sm:inline">TikTok</span>
+        </div>
+        <div className="flex items-center gap-6">
+          <div className="relative hidden md:block">
+            <input
+              type="text"
+              placeholder="Tìm kiếm..."
+              className="bg-white/20 border-none rounded-full py-1 px-4 placeholder:text-white/70 focus:ring-1 focus:ring-white outline-none w-48 text-white"
+            />
+            <Search size={14} className="absolute right-3 top-1.5 text-white/70" />
           </div>
-          <div className="flex items-center gap-4 text-gray-600">
-            <Search size={20} className="cursor-pointer hover:text-[#e71a0f]" />
-            <User size={20} className="cursor-pointer hover:text-[#e71a0f]" />
-            <Menu size={20} className="md:hidden cursor-pointer" />
+          <div className="flex items-center gap-2 cursor-pointer">
+            <ShoppingCart size={18} />
+            <span className="font-bold">GIỎ HÀNG</span>
           </div>
         </div>
+      </div>
+
+      {/* Main Header */}
+      <header className="bg-white sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 md:px-12 h-20 flex justify-between items-center">
+          <div className="text-2xl font-serif font-bold tracking-tighter text-primary">
+            DECOR <span className="text-text-main">HANDICRAFT</span>
+          </div>
+
+          {/* Desktop Nav */}
+          <nav className="hidden lg:flex gap-8">
+            <a href="#" className="nav-link text-primary">Trang Chủ</a>
+            <a href="#" className="nav-link">Giới Thiệu</a>
+            <a href="#" className="nav-link">Sản Phẩm</a>
+            <a href="#" className="nav-link">Tin Tức</a>
+            <a href="#" className="nav-link">Liên Hệ</a>
+          </nav>
+
+          <button className="lg:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X /> : <Menu />}
+          </button>
+        </div>
+
+        {/* Mobile Nav */}
+        {isMenuOpen && (
+          <div className="lg:hidden bg-white border-t border-gray-100 p-4 absolute w-full shadow-xl">
+            <nav className="flex flex-col gap-4">
+              <a href="#" className="nav-link text-primary">Trang Chủ</a>
+              <a href="#" className="nav-link">Giới Thiệu</a>
+              <a href="#" className="nav-link">Sản Phẩm</a>
+              <a href="#" className="nav-link">Tin Tức</a>
+              <a href="#" className="nav-link">Liên Hệ</a>
+            </nav>
+          </div>
+        )}
       </header>
 
-      <main className="flex-1">
-        {!selectedMovie ? (
-          <>
-            {/* Hero Banner Placeholder */}
-            <div className="bg-black w-full h-[400px] relative overflow-hidden hidden md:block">
-              <img
-                src="https://image.tmdb.org/t/p/original/t6Sna4_Y7LfaZ1Iolv3ZqZp9ZpP.jpg"
-                className="w-full h-full object-cover opacity-60"
-                alt="Banner"
-              />
-              <div className="absolute inset-0 flex flex-col justify-center items-center text-white p-4">
-                <h2 className="text-5xl font-bold mb-4">Avatar: The Way of Water</h2>
-                <p className="text-xl max-w-2xl text-center mb-8">Trải nghiệm siêu phẩm điện ảnh đỉnh cao tại CGV.</p>
-                {movies.length > 0 && (
-                  <button
-                    onClick={() => handleMovieSelect(movies[0])}
-                    className="bg-[#e71a0f] text-white px-8 py-3 font-bold rounded uppercase hover:bg-white hover:text-[#e71a0f] transition"
-                  >
-                    Đặt vé ngay
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className="max-w-6xl mx-auto px-4 py-12">
-              <div className="flex items-center gap-4 mb-8 border-b-2 border-gray-800 pb-2">
-                <h2 className="text-2xl font-bold uppercase tracking-widest border-b-4 border-[#e71a0f] pb-2 -mb-[10px]">Phim đang chiếu</h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                {movies.map(movie => (
-                  <div key={movie.id} className="group">
-                    <div className="relative overflow-hidden rounded shadow-lg bg-black aspect-[2/3]">
-                      <img
-                        src={movie.poster_url}
-                        alt={movie.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition duration-500 opacity-90 group-hover:opacity-100"
-                      />
-                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
-                        <button
-                          onClick={() => handleMovieSelect(movie)}
-                          className="bg-[#e71a0f] text-white px-6 py-2 font-bold rounded uppercase border border-[#e71a0f] hover:bg-transparent transition"
-                        >
-                          Mua vé
-                        </button>
-                      </div>
-                    </div>
-                    <div className="mt-4 text-center">
-                      <h3 className="text-lg font-bold text-gray-800 truncate px-2">{movie.title}</h3>
-                      <p className="text-sm text-gray-500 mt-1">{movie.duration} phút</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="max-w-6xl mx-auto px-4 py-8">
-            <button
-              onClick={() => setSelectedMovie(null)}
-              className="flex items-center text-gray-500 hover:text-[#e71a0f] mb-8 font-bold transition uppercase text-sm"
-            >
-              <ChevronLeft size={18} /> Quay lại
+      <main>
+        {/* Hero Section */}
+        <section className="relative h-[600px] overflow-hidden flex items-center">
+          <img
+            src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop"
+            alt="Handicraft Hero"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/30"></div>
+          <div className="relative max-w-7xl mx-auto px-12 w-full text-white">
+            <h2 className="text-5xl md:text-7xl font-serif font-light mb-6 leading-tight">
+              Nâng Tầm <br /> <span className="font-bold italic">Không Gian Sống</span>
+            </h2>
+            <p className="max-w-xl text-lg mb-8 text-white/90">
+              Mang nét đẹp thủ công vào ngôi nhà của bạn với những sản phẩm decor tinh tế,
+              được làm từ đôi bàn tay khéo léo của các nghệ nhân.
+            </p>
+            <button className="btn-primary">
+              Khám Phá Ngay
             </button>
+          </div>
+        </section>
 
-            <div className="bg-white rounded shadow-md overflow-hidden border border-gray-200">
-              <div className="bg-[#333333] text-white p-4">
-                <h2 className="text-xl font-bold uppercase tracking-wider">{selectedMovie.title}</h2>
-              </div>
+        {/* Products Section */}
+        <section className="py-20 px-4 md:px-12 max-w-7xl mx-auto text-center">
+          <div className="mb-16">
+            <h3 className="text-sm font-bold text-primary uppercase tracking-[0.3em] mb-4">Bộ Sưu Tập</h3>
+            <h2 className="section-title">Sản Phẩm Khác Biệt</h2>
+            <div className="w-20 h-1 bg-primary mx-auto mb-6"></div>
+            <p className="max-w-2xl mx-auto text-gray-600 leading-relaxed italic">
+              "Chúng tôi tin rằng mỗi vật dụng trong nhà đều mang một câu chuyện riêng.
+              Các sản phẩm tại Decor Handicraft không chỉ là đồ trang trí, mà còn là linh hồn của không gian sống."
+            </p>
+          </div>
 
-              <div className="p-6 flex flex-col md:flex-row gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Category 1 */}
+            <div className="group cursor-pointer">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-sm mb-4">
                 <img
-                  src={selectedMovie.poster_url}
-                  alt={selectedMovie.title}
-                  className="w-full md:w-64 aspect-[2/3] object-cover rounded shadow-md border-4 border-white"
+                  src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1974&auto=format&fit=crop"
+                  alt="Gối Decor"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-
-                <div className="flex-1">
-                  <div className="mb-8">
-                    <h3 className="text-sm font-bold text-gray-400 uppercase mb-2 border-b border-gray-100 pb-1">Nội dung phim</h3>
-                    <p className="text-gray-700 leading-relaxed text-sm italic">{selectedMovie.description}</p>
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+                <div className="absolute bottom-8 left-0 w-full text-white">
+                  <h4 className="text-2xl font-serif font-bold">Gối Decor</h4>
+                  <div className="flex items-center justify-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-xs uppercase tracking-widest">Xem Chi Tiết</span>
+                    <ChevronRight size={14} />
                   </div>
+                </div>
+              </div>
+            </div>
 
-                  <div className="mb-8">
-                    <h3 className="text-sm font-bold text-gray-400 uppercase mb-4 border-b border-gray-100 pb-1">Chọn suất chiếu</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {showtimes.map(st => (
-                        <button
-                          key={st.id}
-                          onClick={() => handleShowtimeSelect(st)}
-                          className={`py-2 px-3 rounded border transition text-sm font-bold ${
-                            selectedShowtime?.id === st.id
-                            ? 'border-[#e71a0f] bg-[#e71a0f] text-white'
-                            : 'border-gray-300 hover:border-[#e71a0f] text-gray-700'
-                          }`}
-                        >
-                          <div>{st.start_time.split(' ')[1].substring(0, 5)}</div>
-                          <div className={selectedShowtime?.id === st.id ? 'text-white/80 text-[10px]' : 'text-gray-400 text-[10px]'}>{st.hall}</div>
-                        </button>
-                      ))}
-                    </div>
+            {/* Category 2 */}
+            <div className="group cursor-pointer">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-sm mb-4">
+                <img
+                  src="https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1974&auto=format&fit=crop"
+                  alt="Túi Xách"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+                <div className="absolute bottom-8 left-0 w-full text-white">
+                  <h4 className="text-2xl font-serif font-bold">Túi Xách</h4>
+                  <div className="flex items-center justify-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-xs uppercase tracking-widest">Xem Chi Tiết</span>
+                    <ChevronRight size={14} />
                   </div>
+                </div>
+              </div>
+            </div>
 
-                  {selectedShowtime && (
-                    <div className="mt-8 border-t border-gray-100 pt-8 animate-in fade-in duration-500">
-                      <div className="text-center mb-8">
-                        <div className="inline-block bg-[#eeeeee] px-12 py-1 text-xs font-bold text-gray-500 rounded uppercase">Màn hình</div>
-                        <div className="h-1 w-full max-w-md mx-auto bg-gray-300 mt-2 shadow-sm"></div>
-                      </div>
-
-                      <div className="grid grid-cols-8 gap-2 mb-8 max-w-sm mx-auto">
-                        {['A', 'B', 'C', 'D'].map(row =>
-                          [1, 2, 3, 4, 5, 6, 7, 8].map(num => {
-                            const seatId = `${row}${num}`;
-                            const isBooked = bookedSeats.includes(seatId);
-                            const isSelected = selectedSeat === seatId;
-
-                            return (
-                              <button
-                                key={seatId}
-                                disabled={isBooked}
-                                onClick={() => setSelectedSeat(seatId)}
-                                className={`h-8 w-8 rounded text-[10px] font-bold transition flex items-center justify-center
-                                  ${isBooked ? 'bg-[#333333] text-gray-500 cursor-not-allowed' :
-                                    isSelected ? 'bg-[#e71a0f] text-white shadow-lg scale-110' :
-                                    'bg-white border border-gray-300 hover:border-[#e71a0f] text-gray-700'}`}
-                              >
-                                {seatId}
-                              </button>
-                            );
-                          })
-                        )}
-                      </div>
-
-                      <div className="flex justify-center gap-6 mb-8 text-[10px] font-bold uppercase text-gray-500">
-                        <div className="flex items-center gap-2"><div className="w-3 h-3 bg-white border border-gray-300 rounded"></div> Trống</div>
-                        <div className="flex items-center gap-2"><div className="w-3 h-3 bg-[#e71a0f] rounded"></div> Đang chọn</div>
-                        <div className="flex items-center gap-2"><div className="w-3 h-3 bg-[#333333] rounded"></div> Đã đặt</div>
-                      </div>
-
-                      {selectedSeat && (
-                        <form onSubmit={handleBooking} className="max-w-md mx-auto bg-[#fdfcf0] p-6 rounded border-2 border-[#e71a0f] shadow-lg">
-                          <h4 className="text-center font-bold text-[#e71a0f] uppercase mb-4 tracking-tighter">Thông tin đặt vé</h4>
-                          <div className="mb-4">
-                            <label htmlFor="name" className="block text-xs font-bold text-gray-500 uppercase mb-1">Họ tên</label>
-                            <input
-                              id="name"
-                              required
-                              type="text"
-                              className="w-full bg-white border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-[#e71a0f]"
-                              value={customerInfo.name}
-                              onChange={e => setCustomerInfo({...customerInfo, name: e.target.value})}
-                            />
-                          </div>
-                          <div className="mb-6">
-                            <label htmlFor="email" className="block text-xs font-bold text-gray-500 uppercase mb-1">Email</label>
-                            <input
-                              id="email"
-                              required
-                              type="email"
-                              className="w-full bg-white border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-[#e71a0f]"
-                              value={customerInfo.email}
-                              onChange={e => setCustomerInfo({...customerInfo, email: e.target.value})}
-                            />
-                          </div>
-                          <button className="w-full bg-[#e71a0f] hover:bg-[#c4160d] text-white py-3 rounded font-bold transition uppercase tracking-widest shadow-md">
-                            Thanh toán {(selectedShowtime.price).toLocaleString()}đ
-                          </button>
-                        </form>
-                      )}
-                    </div>
-                  )}
+            {/* Category 3 */}
+            <div className="group cursor-pointer">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-sm mb-4">
+                <img
+                  src="https://images.unsplash.com/photo-1534349762230-e0929b7a153b?q=80&w=2070&auto=format&fit=crop"
+                  alt="Đồ Trang Trí"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+                <div className="absolute bottom-8 left-0 w-full text-white">
+                  <h4 className="text-2xl font-serif font-bold">Đồ Trang Trí</h4>
+                  <div className="flex items-center justify-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-xs uppercase tracking-widest">Xem Chi Tiết</span>
+                    <ChevronRight size={14} />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        )}
+        </section>
+
+        {/* Testimonials */}
+        <section className="bg-secondary/10 py-24 px-4">
+          <div className="max-w-5xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-serif mb-16 text-text-main">Khách Hàng Nói Gì Về Chúng Tôi</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="bg-white p-10 rounded-lg shadow-sm border border-gray-100 relative">
+                <Quote className="text-primary/20 absolute top-6 left-6" size={64} />
+                <p className="text-gray-600 italic mb-8 relative z-10 leading-relaxed">
+                  "Tôi rất ấn tượng với chất lượng sản phẩm gối decor ở đây. Đường kim mũi chỉ cực kỳ tinh xảo,
+                  màu sắc nhã nhặn đúng chất rustic mà tôi đang tìm kiếm cho phòng khách."
+                </p>
+                <div>
+                  <h5 className="font-bold text-text-main">Nguyễn Thảo Anh</h5>
+                  <span className="text-xs text-primary uppercase tracking-wider">Hà Nội</span>
+                </div>
+              </div>
+
+              <div className="bg-white p-10 rounded-lg shadow-sm border border-gray-100 relative">
+                <Quote className="text-primary/20 absolute top-6 left-6" size={64} />
+                <p className="text-gray-600 italic mb-8 relative z-10 leading-relaxed">
+                  "Các sản phẩm đồ trang trí bằng mây tre đan mang lại cảm giác rất ấm cúng.
+                  Nhân viên tư vấn rất nhiệt tình và giao hàng nhanh chóng."
+                </p>
+                <div>
+                  <h5 className="font-bold text-text-main">Trần Minh Hiếu</h5>
+                  <span className="text-xs text-primary uppercase tracking-wider">TP. Hồ Chí Minh</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#333333] text-white py-12 mt-12">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-black text-[#e71a0f] mb-4">CGV</h2>
-          <p className="text-gray-400 text-sm max-w-xl mx-auto mb-8">
-            Hệ thống rạp chiếu phim chất lượng nhất Việt Nam. Mang đến trải nghiệm điện ảnh chân thực và sống động.
-          </p>
-          <div className="flex justify-center gap-8 text-gray-400 text-xs uppercase font-bold border-t border-gray-700 pt-8">
-            <a href="#" className="hover:text-white">Điều khoản sử dụng</a>
-            <a href="#" className="hover:text-white">Chính sách bảo mật</a>
-            <a href="#" className="hover:text-white">Liên hệ</a>
+      <footer className="bg-text-main text-white py-16 px-4 md:px-12">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-white/10 pb-12 mb-12">
+          <div className="col-span-1 md:col-span-1">
+            <h3 className="text-xl font-serif font-bold mb-6 tracking-tighter text-accent">DECOR HANDICRAFT</h3>
+            <p className="text-white/60 text-sm leading-relaxed">
+              Chúng tôi mang đến những giải pháp trang trí nội thất thủ công độc bản,
+              giúp không gian sống của bạn trở nên ấm cúng và phong cách hơn.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-bold uppercase tracking-widest text-sm mb-6">Liên Kết</h4>
+            <ul className="flex flex-col gap-3 text-sm text-white/60">
+              <li className="hover:text-accent cursor-pointer">Về Chúng Tôi</li>
+              <li className="hover:text-accent cursor-pointer">Sản Phẩm</li>
+              <li className="hover:text-accent cursor-pointer">Tin Tức</li>
+              <li className="hover:text-accent cursor-pointer">Chính Sách</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold uppercase tracking-widest text-sm mb-6">Liên Hệ</h4>
+            <ul className="flex flex-col gap-3 text-sm text-white/60">
+              <li>Địa chỉ: 123 Đường Decor, Quận 1, TP. HCM</li>
+              <li>Hotline: 0123 456 789</li>
+              <li>Email: info@decorhandicraft.com</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold uppercase tracking-widest text-sm mb-6">Đăng Ký</h4>
+            <p className="text-sm text-white/60 mb-4">Nhận thông tin về bộ sưu tập mới nhất.</p>
+            <div className="flex">
+              <input
+                type="email"
+                placeholder="Email của bạn"
+                className="bg-white/10 border-none px-4 py-2 text-sm w-full outline-none focus:ring-1 focus:ring-accent"
+              />
+              <button className="bg-primary px-4 py-2 font-bold text-xs uppercase">Gửi</button>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/40">
+          <p>© 2025 Decor Handicraft. All Rights Reserved.</p>
+          <div className="flex gap-6">
+            <Share2 size={16} />
           </div>
         </div>
       </footer>
