@@ -138,12 +138,14 @@ const App = () => {
               <div className="absolute inset-0 flex flex-col justify-center items-center text-white p-4">
                 <h2 className="text-5xl font-bold mb-4">Avatar: The Way of Water</h2>
                 <p className="text-xl max-w-2xl text-center mb-8">Trải nghiệm siêu phẩm điện ảnh đỉnh cao tại CGV.</p>
-                <button
-                   onClick={() => handleMovieSelect(movies[0])}
-                   className="bg-[#e71a0f] text-white px-8 py-3 font-bold rounded uppercase hover:bg-white hover:text-[#e71a0f] transition"
-                >
-                  Đặt vé ngay
-                </button>
+                {movies.length > 0 && (
+                  <button
+                    onClick={() => handleMovieSelect(movies[0])}
+                    className="bg-[#e71a0f] text-white px-8 py-3 font-bold rounded uppercase hover:bg-white hover:text-[#e71a0f] transition"
+                  >
+                    Đặt vé ngay
+                  </button>
+                )}
               </div>
             </div>
 
