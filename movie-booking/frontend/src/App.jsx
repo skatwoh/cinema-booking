@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Film, Calendar, Clock, MapPin, ChevronLeft, CheckCircle, Search, User, Menu, Star, Play, Ticket } from 'lucide-react';
+import { Calendar, Clock, MapPin, ChevronLeft, CheckCircle, Search, User, Menu, Star, Play, Ticket } from 'lucide-react';
 
 const API_BASE_URL = 'http://localhost:8000/api';
 
@@ -208,6 +208,66 @@ const App = () => {
                     <p className="text-text-muted text-xs mt-1 uppercase tracking-widest">{movie.duration} PHÚT • HÀNH ĐỘNG</p>
                   </div>
                 ))}
+              </div>
+            </section>
+
+            {/* Promotional Section */}
+            <section className="pb-24 container mx-auto px-6">
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Gourmet Card */}
+                <div className="relative group overflow-hidden rounded-3xl h-72 flex items-center">
+                  <img
+                    src="https://images.unsplash.com/photo-1572177191856-3cde618dee1f?auto=format&fit=crop&q=80&w=800"
+                    alt="Popcorn"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-black/60"></div>
+                  <div className="relative z-10 p-10 max-w-sm">
+                    <h3 className="text-3xl font-black italic text-accent leading-none mb-4 uppercase tracking-tighter">Gourmet<br/>Experiences</h3>
+                    <p className="text-text-muted text-xs mb-8 leading-relaxed">Elevate your viewing with our curated snack menu and artisan beverages.</p>
+                    <button className="border border-accent text-accent text-[10px] font-black px-6 py-2.5 rounded-sm uppercase tracking-widest hover:bg-accent hover:text-black transition-all">Explore Menu</button>
+                  </div>
+                </div>
+
+                {/* Membership Card */}
+                <div className="relative group overflow-hidden rounded-3xl h-72 flex items-center bg-gradient-to-br from-rose-600 to-rose-400">
+                  <div className="relative z-10 p-10 max-w-sm">
+                    <h3 className="text-3xl font-black italic text-white leading-none mb-4 uppercase tracking-tighter">Join The Nocturne<br/>Elite</h3>
+                    <p className="text-white/90 text-xs mb-8 leading-relaxed">Get 20% off every booking and access to exclusive preview screenings.</p>
+                    <button className="bg-bg-dark text-white text-[10px] font-black px-6 py-2.5 rounded-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all shadow-xl">Get Membership</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Coming Soon Section */}
+            <section className="py-24 bg-secondary/20 border-t border-white/5">
+              <div className="container mx-auto px-6">
+                <div className="flex items-center gap-4 mb-16">
+                   <div className="h-0.5 w-10 bg-primary"></div>
+                   <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">Coming Soon</h3>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+                  {[
+                    { title: "The Last Highway", genre: "MYSTERY • THRILLER", date: "OCT 14", img: "https://images.unsplash.com/photo-1533928413348-df45532570d5?auto=format&fit=crop&q=80&w=400" },
+                    { title: "Rhythm of Light", genre: "MUSIC • DRAMA", date: "OCT 28", img: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=400" },
+                    { title: "Cinema Paradiso", genre: "DOCUMENTARY", date: "NOV 05", img: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=400" },
+                    { title: "Project Genesis", genre: "SCI-FI • HORROR", date: "NOV 12", img: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=400" },
+                    { title: "After The Fall", genre: "ROMANCE", date: "NOV 20", img: "https://images.unsplash.com/photo-1514306191717-452ec28c7814?auto=format&fit=crop&q=80&w=400" },
+                  ].map((movie, i) => (
+                    <div key={i} className="group">
+                      <div className="relative aspect-[3/4] overflow-hidden rounded-xl grayscale group-hover:grayscale-0 transition-all duration-700 mb-5 ring-1 ring-white/5 shadow-2xl">
+                        <img src={movie.img} alt={movie.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm text-black text-[9px] font-black px-2 py-1 rounded-sm shadow-xl">
+                          {movie.date}
+                        </div>
+                      </div>
+                      <h4 className="text-white text-sm font-bold mb-1 group-hover:text-primary transition-colors">{movie.title}</h4>
+                      <p className="text-[9px] text-text-muted font-bold tracking-[0.15em] uppercase">{movie.genre}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </section>
           </>
