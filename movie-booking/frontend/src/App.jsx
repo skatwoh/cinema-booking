@@ -101,7 +101,7 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-bg-dark selection:bg-primary selection:text-white text-sans antialiased">
+    <div className="min-h-screen flex flex-col bg-bg-dark selection:bg-primary selection:text-white font-sans antialiased">
       {/* Navbar */}
       <header className="fixed top-0 w-full z-50 bg-bg-dark/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">

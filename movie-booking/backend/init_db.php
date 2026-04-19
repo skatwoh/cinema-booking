@@ -1,35 +1,28 @@
 <?php
-// MySQL Connection (XAMPP Default)
-$host = '127.0.0.1';
-$username = 'root';
-$password = '';
-$db_name = 'movie_booking';
+// SQLite Connection
+$db_file = __DIR__ . '/movie_booking.sqlite';
 
 try {
-    $pdo = new PDO("mysql:host=$host", $username, $password);
+    $pdo = new PDO("sqlite:$db_file");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Create Database
-    $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db_name` CHARACTER SET utf8 COLLATE utf8_general_ci;");
-    $pdo->exec("USE `$db_name`;");
-
     // Drop tables if exist
-    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
-    $pdo->exec("DROP TABLE IF EXISTS bookings, showtimes, movies;");
-    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
+    $pdo->exec("DROP TABLE IF EXISTS bookings;");
+    $pdo->exec("DROP TABLE IF EXISTS showtimes;");
+    $pdo->exec("DROP TABLE IF EXISTS movies;");
 
     // Create tables
     $pdo->exec("CREATE TABLE movies (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         title VARCHAR(255),
         description TEXT,
         poster_url VARCHAR(255),
-        duration INT
+        duration INTEGER
     );");
 
     $pdo->exec("CREATE TABLE showtimes (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        movie_id INT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        movie_id INTEGER,
         start_time DATETIME,
         hall VARCHAR(50),
         price DECIMAL(10,2),
@@ -37,8 +30,8 @@ try {
     );");
 
     $pdo->exec("CREATE TABLE bookings (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        showtime_id INT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        showtime_id INTEGER,
         customer_name VARCHAR(100),
         customer_email VARCHAR(100),
         seat_number VARCHAR(10),
@@ -62,7 +55,7 @@ try {
     $pdo->exec("INSERT INTO showtimes (movie_id, start_time, hall, price) VALUES (2, '2025-05-20 19:00:00', 'Hall B', 120000);");
     $pdo->exec("INSERT INTO showtimes (movie_id, start_time, hall, price) VALUES (3, '2025-05-20 20:00:00', 'Hall C', 100000);");
 
-    echo "MySQL Database '$db_name' initialized and seeded successfully!\n";
+    echo "SQLite Database initialized and seeded successfully at $db_file\n";
 
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage());
