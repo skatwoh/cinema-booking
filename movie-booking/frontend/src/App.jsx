@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Calendar, Clock, MapPin, ChevronLeft, CheckCircle, Search, User, Menu, Star, Play, Ticket } from 'lucide-react';
+import {
+  Calendar, Clock, MapPin, ChevronLeft, CheckCircle, Search,
+  User, Menu, Star, Play, Ticket, Bell, ChevronDown,
+  Volume2, Film, Share2
+} from 'lucide-react';
 
 const API_BASE_URL = 'http://localhost:8000/api';
 
@@ -13,6 +17,7 @@ const App = () => {
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [bookingStatus, setBookingStatus] = useState(null);
   const [customerInfo, setCustomerInfo] = useState({ name: '', email: '' });
+  const [selectedDate, setSelectedDate] = useState('OCT 24');
 
   useEffect(() => {
     fetchMovies();
@@ -22,6 +27,9 @@ const App = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/movies`);
       setMovies(response.data);
+      if (response.data.length > 0 && !selectedMovie) {
+        handleMovieSelect(response.data[0]);
+      }
     } catch (error) {
       console.error("Error fetching movies", error);
     }
@@ -47,7 +55,9 @@ const App = () => {
 
   const handleMovieSelect = (movie) => {
     setSelectedMovie(movie);
-    fetchShowtimes(movie.id);
+    if (movie) {
+      fetchShowtimes(movie.id);
+    }
     setSelectedShowtime(null);
     setSelectedSeat(null);
     setBookingStatus(null);
@@ -83,348 +93,462 @@ const App = () => {
           <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-12 h-12 text-primary" />
           </div>
-          <h2 className="text-3xl font-bold mb-2 text-white italic tracking-tighter uppercase">Đặt vé thành công!</h2>
+          <h2 className="text-3xl font-bold mb-2 text-white italic tracking-tighter uppercase">ĐẶT VÉ THÀNH CÔNG!</h2>
           <p className="text-text-muted mb-8 leading-relaxed">Cảm ơn {customerInfo.name}. Thông tin vé đã được gửi đến {customerInfo.email}. Chúc bạn xem phim vui vẻ!</p>
           <button
             onClick={() => {
-              setSelectedMovie(null);
               setBookingStatus(null);
               setCustomerInfo({ name: '', email: '' });
+              if (movies.length > 0) {
+                handleMovieSelect(movies[0]);
+              } else {
+                setSelectedMovie(null);
+                setSelectedShowtime(null);
+                setSelectedSeat(null);
+              }
             }}
             className="w-full btn-primary py-4 text-base uppercase tracking-widest shadow-lg shadow-primary/20"
           >
-            Quay lại trang chủ
+            QUAY LẠI TRANG CHỦ
           </button>
         </div>
       </div>
     );
   }
 
+  const dates = [
+    { day: '24', month: 'OCT', weekday: 'TODAY' },
+    { day: '25', month: 'OCT', weekday: 'FRI' },
+    { day: '26', month: 'OCT', weekday: 'SAT' },
+    { day: '27', month: 'OCT', weekday: 'SUN' },
+    { day: '28', month: 'OCT', weekday: 'MON' },
+  ];
+
+  const groupedShowtimes = showtimes.reduce((acc, showtime) => {
+    const hall = showtime.hall;
+    if (!acc[hall]) acc[hall] = [];
+    acc[hall].push(showtime);
+    return acc;
+  }, {});
+
   return (
     <div className="min-h-screen flex flex-col bg-bg-dark selection:bg-primary selection:text-white font-sans antialiased">
       {/* Navbar */}
       <header className="fixed top-0 w-full z-50 bg-bg-dark/80 backdrop-blur-xl border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-12">
             <h1
-              className="text-2xl font-black tracking-tighter italic cursor-pointer group"
+              className="text-xl font-black tracking-tighter cursor-pointer group"
               onClick={() => setSelectedMovie(null)}
             >
-              <span className="text-white group-hover:text-primary transition-colors">NOCTURNE</span>
-              <span className="text-primary group-hover:text-white transition-colors ml-1">CINEMAS</span>
+              <span className="text-primary group-hover:text-white transition-colors">NOCTURNE</span>
+              <span className="text-white group-hover:text-primary transition-colors ml-2">CINEMAS</span>
             </h1>
-            <nav className="hidden lg:flex items-center gap-8">
+            <nav className="hidden lg:flex items-center gap-6">
               <span className="nav-link nav-link-active">Phim</span>
               <span className="nav-link">Rạp</span>
-              <span className="nav-link">Khuyến mãi</span>
-              <span className="nav-link">Thành viên</span>
+              <span className="nav-link">Ưu đãi</span>
             </nav>
           </div>
           <div className="flex items-center gap-6">
-            <div className="hidden sm:flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full text-text-muted focus-within:border-primary/50 transition-all">
-              <Search size={16} />
-              <input type="text" placeholder="Tìm kiếm phim..." className="bg-transparent border-none outline-none text-sm text-white w-40" />
+            <div className="hidden sm:flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-1.5 rounded-full text-text-muted focus-within:border-primary/50 transition-all">
+              <Search size={14} />
+              <input type="text" placeholder="Tìm kiếm phim..." className="bg-transparent border-none outline-none text-xs text-white w-48" />
             </div>
-            <button className="p-2 text-text-muted hover:text-white transition-colors"><User size={20} /></button>
-            <button className="lg:hidden p-2 text-text-muted hover:text-white transition-colors"><Menu size={20} /></button>
+            <button className="p-2 text-text-muted hover:text-white transition-colors relative">
+              <Bell size={18} />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-bg-dark"></span>
+            </button>
+            <button className="flex items-center gap-2 p-1 pl-1 pr-3 rounded-full hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
+              <div className="w-7 h-7 bg-primary/20 rounded-full flex items-center justify-center">
+                <User size={16} className="text-primary" />
+              </div>
+            </button>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 pt-20">
-        {!selectedMovie ? (
-          <>
-            {/* Hero Section */}
-            <section className="relative h-[85vh] w-full flex items-center overflow-hidden">
-              <div className="absolute inset-0 z-0">
-                <img
-                  src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=2000"
-                  className="w-full h-full object-cover scale-105"
-                  alt="Hero Background"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-bg-dark via-bg-dark/60 to-transparent"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-bg-dark via-transparent to-transparent"></div>
-              </div>
+      <main className="flex-1 pt-16">
+        {/* Hero Section */}
+        <section className="relative h-[60vh] w-full flex items-center overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <img
+              src={selectedMovie?.poster_url || "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=2000"}
+              className="w-full h-full object-cover"
+              alt={selectedMovie?.title || "Hero Background"}
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-bg-dark via-bg-dark/40 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-bg-dark via-transparent to-transparent"></div>
+          </div>
 
-              <div className="container mx-auto px-6 relative z-10">
-                <div className="max-w-2xl animate-in fade-in slide-in-from-left duration-1000">
-                  <div className="flex items-center gap-2 mb-6">
-                    <span className="bg-primary/20 text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-primary/30">Phim nổi bật trong tuần</span>
-                    <div className="flex text-accent gap-0.5"><Star size={12} fill="currentColor" /><Star size={12} fill="currentColor" /><Star size={12} fill="currentColor" /><Star size={12} fill="currentColor" /><Star size={12} fill="currentColor" /></div>
-                  </div>
-                  <h2 className="text-7xl font-black italic tracking-tighter text-white mb-4 uppercase leading-[0.9]">
-                    Neon<br />
-                    <span className="text-primary">Eclipse</span>
-                  </h2>
-                  <p className="text-text-muted text-lg mb-10 leading-relaxed max-w-lg">
-                    Bước vào thế giới nơi thực tại mờ nhạt trước chân trời kỹ thuật số. Một hành trình điện ảnh sống động định nghĩa lại bản chất của việc kể chuyện bằng hình ảnh.
-                  </p>
-                  <div className="flex flex-wrap gap-4">
-                    {movies.length > 0 && (
-                      <button
-                        onClick={() => handleMovieSelect(movies[0])}
-                        className="btn-primary flex items-center gap-2 group"
-                      >
-                        <Ticket size={18} className="group-hover:rotate-12 transition-transform" />
-                        Đặt vé ngay
-                      </button>
-                    )}
-                    <button className="btn-glass flex items-center gap-2 group">
-                      <Play size={18} className="group-hover:scale-110 transition-transform" />
-                      Xem Trailer
-                    </button>
-                  </div>
+          <div className="container mx-auto px-10 relative z-10 pt-20">
+            <div className="max-w-3xl">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="badge badge-primary">ĐANG CHIẾU</span>
+                <span className="badge badge-outline">TRẢI NGHIỆM CAO CẤP</span>
+              </div>
+              <h2 className="text-7xl font-black tracking-tighter text-white mb-6 uppercase leading-none">
+                {selectedMovie?.title || "NOCTURNE PREMIERE"}
+              </h2>
+              <p className="text-text-muted text-lg mb-6 max-w-xl line-clamp-3">
+                {selectedMovie?.description}
+              </p>
+              <div className="flex items-center gap-6 text-sm text-text-main/80 font-medium">
+                <div className="flex items-center gap-1.5"><Star size={16} className="text-accent" fill="currentColor" /> 9.2</div>
+                <span>•</span>
+                <span>{selectedMovie?.duration} phút</span>
+                <span>•</span>
+                <span className="border border-white/40 px-1.5 py-0.5 rounded-sm text-[10px]">PG-13</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Content Section */}
+        <section className="container mx-auto px-10 py-12">
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Left Column: Selection */}
+            <div className="lg:w-2/3">
+              {/* Movie Selection Slider */}
+              <div className="mb-12">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-white">KHÁM PHÁ PHIM</h3>
                 </div>
-              </div>
-            </section>
-
-            {/* Movies Grid */}
-            <section className="py-24 container mx-auto px-6">
-              <div className="flex items-end justify-between mb-12">
-                <div>
-                  <h3 className="text-3xl font-black italic uppercase tracking-tighter text-white">Phim Đang Chiếu</h3>
-                  <div className="h-1 w-12 bg-primary mt-2"></div>
-                </div>
-                <span className="text-primary text-sm font-bold uppercase tracking-widest hover:underline cursor-pointer">Xem Tất Cả</span>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-                {movies.map(movie => (
-                  <div key={movie.id} className="group cursor-pointer" onClick={() => handleMovieSelect(movie)}>
-                    <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-secondary mb-4 ring-1 ring-white/10 group-hover:ring-primary/50 transition-all duration-500">
-                      <img
-                        src={movie.poster_url}
-                        alt={movie.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                      <div className="movie-card-rating">
-                        <Star size={10} fill="currentColor" /> 9.2
+                <div className="flex gap-6 overflow-x-auto pb-6 no-scrollbar">
+                  {movies.map((movie) => (
+                    <div
+                      key={movie.id}
+                      onClick={() => handleMovieSelect(movie)}
+                      className={`flex-shrink-0 w-40 cursor-pointer transition-all duration-500 group ${
+                        selectedMovie?.id === movie.id ? 'scale-105' : 'opacity-60 hover:opacity-100'
+                      }`}
+                    >
+                      <div className={`relative aspect-[2/3] rounded-xl overflow-hidden mb-3 border-2 transition-colors ${
+                        selectedMovie?.id === movie.id ? 'border-primary shadow-lg shadow-primary/20' : 'border-transparent'
+                      }`}>
+                        <img
+                          src={movie.poster_url}
+                          alt={movie.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        {selectedMovie?.id === movie.id && (
+                          <div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
+                            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                              <Play size={16} fill="white" className="ml-1" />
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-bg-dark via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
-                        <button className="w-full btn-primary py-3 scale-90 group-hover:scale-100 transition-transform">Mua vé nhanh</button>
-                      </div>
-                    </div>
-                    <h4 className="text-white font-bold group-hover:text-primary transition-colors line-clamp-1">{movie.title}</h4>
-                    <p className="text-text-muted text-xs mt-1 uppercase tracking-widest">{movie.duration} PHÚT • HÀNH ĐỘNG</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Promotional Section */}
-            <section className="pb-24 container mx-auto px-6">
-              <div className="grid md:grid-cols-2 gap-8">
-                {/* Gourmet Card */}
-                <div className="relative group overflow-hidden rounded-3xl h-72 flex items-center">
-                  <img
-                    src="https://images.unsplash.com/photo-1572177191856-3cde618dee1f?auto=format&fit=crop&q=80&w=800"
-                    alt="Popcorn"
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-black/60"></div>
-                  <div className="relative z-10 p-10 max-w-sm">
-                    <h3 className="text-3xl font-black italic text-accent leading-none mb-4 uppercase tracking-tighter">Gourmet<br/>Experiences</h3>
-                    <p className="text-text-muted text-xs mb-8 leading-relaxed">Elevate your viewing with our curated snack menu and artisan beverages.</p>
-                    <button className="border border-accent text-accent text-[10px] font-black px-6 py-2.5 rounded-sm uppercase tracking-widest hover:bg-accent hover:text-black transition-all">Explore Menu</button>
-                  </div>
-                </div>
-
-                {/* Membership Card */}
-                <div className="relative group overflow-hidden rounded-3xl h-72 flex items-center bg-gradient-to-br from-rose-600 to-rose-400">
-                  <div className="relative z-10 p-10 max-w-sm">
-                    <h3 className="text-3xl font-black italic text-white leading-none mb-4 uppercase tracking-tighter">Join The Nocturne<br/>Elite</h3>
-                    <p className="text-white/90 text-xs mb-8 leading-relaxed">Get 20% off every booking and access to exclusive preview screenings.</p>
-                    <button className="bg-bg-dark text-white text-[10px] font-black px-6 py-2.5 rounded-sm uppercase tracking-widest hover:bg-white hover:text-black transition-all shadow-xl">Get Membership</button>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Coming Soon Section */}
-            <section className="py-24 bg-secondary/20 border-t border-white/5">
-              <div className="container mx-auto px-6">
-                <div className="flex items-center gap-4 mb-16">
-                   <div className="h-0.5 w-10 bg-primary"></div>
-                   <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white">Coming Soon</h3>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-                  {[
-                    { title: "The Last Highway", genre: "MYSTERY • THRILLER", date: "OCT 14", img: "https://images.unsplash.com/photo-1533928413348-df45532570d5?auto=format&fit=crop&q=80&w=400" },
-                    { title: "Rhythm of Light", genre: "MUSIC • DRAMA", date: "OCT 28", img: "https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=400" },
-                    { title: "Cinema Paradiso", genre: "DOCUMENTARY", date: "NOV 05", img: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=400" },
-                    { title: "Project Genesis", genre: "SCI-FI • HORROR", date: "NOV 12", img: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=400" },
-                    { title: "After The Fall", genre: "ROMANCE", date: "NOV 20", img: "https://images.unsplash.com/photo-1514306191717-452ec28c7814?auto=format&fit=crop&q=80&w=400" },
-                  ].map((movie, i) => (
-                    <div key={i} className="group">
-                      <div className="relative aspect-[3/4] overflow-hidden rounded-xl grayscale group-hover:grayscale-0 transition-all duration-700 mb-5 ring-1 ring-white/5 shadow-2xl">
-                        <img src={movie.img} alt={movie.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm text-black text-[9px] font-black px-2 py-1 rounded-sm shadow-xl">
-                          {movie.date}
-                        </div>
-                      </div>
-                      <h4 className="text-white text-sm font-bold mb-1 group-hover:text-primary transition-colors">{movie.title}</h4>
-                      <p className="text-[9px] text-text-muted font-bold tracking-[0.15em] uppercase">{movie.genre}</p>
+                      <h4 className={`text-[11px] font-black uppercase tracking-tighter truncate ${
+                        selectedMovie?.id === movie.id ? 'text-primary' : 'text-text-muted'
+                      }`}>
+                        {movie.title}
+                      </h4>
                     </div>
                   ))}
                 </div>
               </div>
-            </section>
-          </>
-        ) : (
-          <section className="py-12 container mx-auto px-6">
-            <button
-              onClick={() => setSelectedMovie(null)}
-              className="flex items-center gap-2 text-text-muted hover:text-white mb-10 transition-colors group uppercase text-xs font-bold tracking-widest"
-            >
-              <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Quay lại danh sách phim
-            </button>
 
-            <div className="flex flex-col lg:flex-row gap-16">
-              <div className="lg:w-1/3">
-                <div className="sticky top-32">
-                  <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 mb-8">
-                    <img src={selectedMovie.poster_url} alt={selectedMovie.title} className="w-full h-full object-cover" />
-                  </div>
-                  <h2 className="text-4xl font-black italic uppercase tracking-tighter text-white mb-4 leading-none">{selectedMovie.title}</h2>
-                  <div className="flex items-center gap-4 text-text-muted text-sm mb-6">
-                    <span className="flex items-center gap-1"><Clock size={14} /> {selectedMovie.duration} phút</span>
-                    <span className="flex items-center gap-1 font-bold text-accent"><Star size={14} fill="currentColor" /> 9.2/10</span>
-                  </div>
-                  <p className="text-text-muted leading-relaxed text-sm italic border-l-2 border-primary pl-4">{selectedMovie.description}</p>
-                </div>
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-white">CHỌN NGÀY</h3>
+                <button className="text-[10px] font-bold text-text-muted hover:text-white flex items-center gap-1.5 uppercase">
+                  Xem lịch <Calendar size={14} />
+                </button>
               </div>
 
-              <div className="lg:w-2/3">
-                <div className="bg-secondary/40 backdrop-blur-md p-10 rounded-3xl ring-1 ring-white/5">
-                  <h3 className="text-xl font-bold text-white mb-8 flex items-center gap-3">
-                    <Calendar className="text-primary" size={20} /> Chọn Suất Chiếu
-                  </h3>
+              <div className="flex gap-4 mb-12 overflow-x-auto pb-2 no-scrollbar">
+                {dates.map((d, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedDate(`${d.month} ${d.day}`)}
+                    className={`flex-shrink-0 w-20 h-24 rounded-xl border flex flex-col items-center justify-center transition-all ${
+                      selectedDate === `${d.month} ${d.day}`
+                      ? 'bg-primary border-primary text-white shadow-lg shadow-primary/30'
+                      : 'bg-secondary/40 border-white/5 text-text-muted hover:border-white/20'
+                    }`}
+                  >
+                    <span className="text-[10px] font-bold mb-1">{d.month}</span>
+                    <span className="text-2xl font-black mb-1">{d.day}</span>
+                    <span className="text-[9px] font-black uppercase tracking-tighter">{d.weekday === 'TODAY' ? 'HÔM NAY' : d.weekday}</span>
+                  </button>
+                ))}
+              </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
-                    {showtimes.map(st => (
-                      <button
-                        key={st.id}
-                        onClick={() => handleShowtimeSelect(st)}
-                        className={`group p-4 rounded-2xl border transition-all text-left ${
-                          selectedShowtime?.id === st.id
-                          ? 'border-primary bg-primary/10 ring-1 ring-primary'
-                          : 'border-white/10 bg-white/5 hover:border-white/30'
-                        }`}
-                      >
-                        <div className={`text-lg font-bold mb-1 ${selectedShowtime?.id === st.id ? 'text-primary' : 'text-white'}`}>
-                          {st.start_time.split(' ')[1].substring(0, 5)}
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-white">RẠP ĐANG CHIẾU</h3>
+                <button className="bg-secondary/60 border border-white/10 px-4 py-2 rounded-md text-xs font-bold text-white flex items-center gap-4">
+                  Hà Nội <ChevronDown size={14} className="text-primary" />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Seat Selection Section */}
+                {selectedShowtime && (
+                  <div className="card-dark p-8 border-primary/30 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div className="flex justify-between items-center mb-8">
+                      <div>
+                        <h4 className="text-xl font-bold text-white mb-1">Chọn Chỗ Ngồi</h4>
+                        <p className="text-text-muted text-xs uppercase tracking-widest font-bold">
+                          {selectedShowtime.hall} • {new Date(selectedShowtime.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                      <div className="flex gap-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-white/10 rounded-sm"></div>
+                          <span className="text-[10px] text-text-muted font-bold">TRỐNG</span>
                         </div>
-                        <div className="text-[10px] text-text-muted uppercase tracking-widest font-bold flex items-center gap-1">
-                          <MapPin size={10} /> {st.hall}
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-primary rounded-sm"></div>
+                          <span className="text-[10px] text-text-muted font-bold">ĐANG CHỌN</span>
                         </div>
-                      </button>
-                    ))}
-                  </div>
-
-                  {selectedShowtime && (
-                    <div className="animate-in fade-in slide-in-from-bottom duration-700">
-                      <h3 className="text-xl font-bold text-white mb-8 flex items-center gap-3 border-t border-white/5 pt-12">
-                        <Ticket className="text-primary" size={20} /> Chọn Ghế Của Bạn
-                      </h3>
-
-                      <div className="mb-12">
-                        <div className="w-full h-2 bg-gradient-to-t from-primary/30 to-transparent rounded-full mb-4 shadow-[0_-10px_20px_-5px_rgba(244,63,94,0.3)]"></div>
-                        <p className="text-center text-[10px] text-primary font-black uppercase tracking-[0.3em] mb-12">MÀN HÌNH</p>
-
-                        <div className="grid grid-cols-8 gap-3 max-w-md mx-auto mb-10">
-                          {['A', 'B', 'C', 'D'].map(row =>
-                            [1, 2, 3, 4, 5, 6, 7, 8].map(num => {
-                              const seatId = `${row}${num}`;
-                              const isBooked = bookedSeats.includes(seatId);
-                              const isSelected = selectedSeat === seatId;
-
-                              return (
-                                <button
-                                  key={seatId}
-                                  disabled={isBooked}
-                                  onClick={() => setSelectedSeat(seatId)}
-                                  className={`aspect-square rounded-lg text-[10px] font-bold transition-all flex items-center justify-center ${
-                                    isBooked
-                                    ? 'bg-white/5 text-white/10 cursor-not-allowed border border-transparent'
-                                    : isSelected
-                                    ? 'bg-primary text-white shadow-lg shadow-primary/30 scale-110 border border-primary'
-                                    : 'bg-white/10 text-text-muted hover:bg-white/20 hover:text-white border border-white/5'
-                                  }`}
-                                >
-                                  {seatId}
-                                </button>
-                              );
-                            })
-                          )}
-                        </div>
-
-                        <div className="flex justify-center gap-8 text-[9px] font-bold uppercase tracking-widest text-text-muted">
-                          <div className="flex items-center gap-2"><div className="w-3 h-3 bg-white/10 rounded-sm border border-white/5"></div> Còn trống</div>
-                          <div className="flex items-center gap-2"><div className="w-3 h-3 bg-primary rounded-sm shadow-sm shadow-primary/30"></div> Đang chọn</div>
-                          <div className="flex items-center gap-2"><div className="w-3 h-3 bg-white/5 rounded-sm"></div> Đã đặt</div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-white/40 rounded-sm"></div>
+                          <span className="text-[10px] text-text-muted font-bold">ĐÃ ĐẶT</span>
                         </div>
                       </div>
-
-                      {selectedSeat && (
-                        <div className="bg-bg-dark p-8 rounded-3xl border border-primary/20 shadow-2xl animate-in zoom-in duration-500 max-w-md mx-auto">
-                          <h4 className="text-center font-black text-white italic uppercase mb-8 tracking-tighter text-xl">Xác nhận đặt vé</h4>
-                          <form onSubmit={handleBooking} className="space-y-6">
-                            <div>
-                              <label className="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2">Họ tên khách hàng</label>
-                              <input
-                                required
-                                type="text"
-                                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                                value={customerInfo.name}
-                                onChange={e => setCustomerInfo({...customerInfo, name: e.target.value})}
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-2">Địa chỉ Email</label>
-                              <input
-                                required
-                                type="email"
-                                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                                value={customerInfo.email}
-                                onChange={e => setCustomerInfo({...customerInfo, email: e.target.value})}
-                              />
-                            </div>
-                            <div className="bg-white/5 p-4 rounded-xl border border-white/5 mb-8">
-                              <div className="flex justify-between text-xs mb-1"><span className="text-text-muted">Ghế</span> <span className="text-white font-bold">{selectedSeat}</span></div>
-                              <div className="flex justify-between text-xs"><span className="text-text-muted">Giá vé</span> <span className="text-primary font-bold">{(selectedShowtime.price).toLocaleString()}đ</span></div>
-                            </div>
-                            <button className="w-full btn-primary py-4 text-sm uppercase tracking-[0.2em] shadow-xl shadow-primary/20">
-                              Hoàn tất thanh toán
-                            </button>
-                          </form>
-                        </div>
-                      )}
                     </div>
-                  )}
+
+                    <div className="mb-12">
+                      <div className="w-full h-1.5 bg-gradient-to-r from-transparent via-primary/40 to-transparent rounded-full mb-12 relative">
+                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] font-black text-primary/60 tracking-[0.5em] uppercase">MÀN HÌNH</div>
+                      </div>
+
+                      <div className="grid grid-cols-8 gap-3 max-w-md mx-auto">
+                        {['A', 'B', 'C', 'D'].map(row =>
+                          Array.from({length: 8}, (_, i) => i + 1).map(col => {
+                            const seatId = `${row}${col}`;
+                            const isBooked = bookedSeats.includes(seatId);
+                            const isSelected = selectedSeat === seatId;
+
+                            return (
+                              <button
+                                key={seatId}
+                                disabled={isBooked}
+                                onClick={() => setSelectedSeat(seatId)}
+                                className={`aspect-square rounded-md text-[10px] font-bold transition-all ${
+                                  isBooked ? 'bg-white/40 cursor-not-allowed opacity-20' :
+                                  isSelected ? 'bg-primary text-white shadow-lg shadow-primary/40 scale-110' :
+                                  'bg-white/5 border border-white/10 text-text-muted hover:border-primary hover:text-primary'
+                                }`}
+                              >
+                                {seatId}
+                              </button>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Booking Form */}
+                    <div className="pt-8 border-t border-white/5">
+                      <h5 className="text-[10px] font-black text-text-muted uppercase tracking-[0.15em] mb-6 text-center">THÔNG TIN LIÊN HỆ</h5>
+                      <form onSubmit={handleBooking} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          type="text"
+                          placeholder="HỌ VÀ TÊN"
+                          required
+                          value={customerInfo.name}
+                          onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
+                          className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-xs text-white outline-none focus:border-primary transition-colors"
+                        />
+                        <input
+                          type="email"
+                          placeholder="ĐỊA CHỈ EMAIL"
+                          required
+                          value={customerInfo.email}
+                          onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
+                          className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-xs text-white outline-none focus:border-primary transition-colors"
+                        />
+                        <button
+                          type="submit"
+                          disabled={!selectedSeat}
+                          className={`md:col-span-2 py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] transition-all ${
+                            selectedSeat
+                            ? 'bg-primary text-white shadow-lg shadow-primary/30 hover:scale-[1.02] active:scale-95'
+                            : 'bg-white/5 text-text-muted cursor-not-allowed'
+                          }`}
+                        >
+                          XÁC NHẬN ĐẶT VÉ
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                )}
+
+                {Object.keys(groupedShowtimes).length > 0 ? (
+                  Object.entries(groupedShowtimes).map(([hall, times], i) => (
+                    <div key={i} className="card-dark p-8">
+                      <div className="flex justify-between items-start mb-8">
+                        <div>
+                          <h4 className="text-xl font-bold text-white mb-1">Nocturne {hall}</h4>
+                          <p className="text-text-muted text-xs flex items-center gap-1.5">
+                            <MapPin size={12} className="text-primary" /> Phố Phim, Hà Nội
+                          </p>
+                        </div>
+                        <span className="bg-accent/10 text-accent text-[9px] font-black px-3 py-1.5 rounded-full tracking-widest">
+                          CÓ SUẤT CHIẾU HÔM NAY
+                        </span>
+                      </div>
+
+                      <div className="space-y-8">
+                        <div>
+                          <h5 className="text-[10px] font-black text-text-muted uppercase tracking-[0.15em] mb-4">SUẤT CHIẾU CAO CẤP</h5>
+                          <div className="flex flex-wrap gap-3">
+                            {times.map((showtime, k) => (
+                              <button
+                                key={k}
+                                onClick={() => handleShowtimeSelect(showtime)}
+                                className={`px-6 py-2.5 rounded-md border text-sm font-bold transition-all ${
+                                  selectedShowtime?.id === showtime.id
+                                  ? 'bg-primary border-primary text-white shadow-lg shadow-primary/30'
+                                  : 'bg-white/5 border-white/10 text-white hover:border-primary hover:text-primary'
+                                }`}
+                              >
+                                {new Date(showtime.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-12 text-center card-dark">
+                    <p className="text-text-muted italic uppercase tracking-widest text-xs">Không có suất chiếu cho ngày này.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column: Sidebar */}
+            <div className="lg:w-1/3">
+              <div className="sticky top-24 space-y-6">
+                {/* Booking Summary */}
+                <div className="bg-secondary/40 backdrop-blur-md rounded-2xl border border-white/5 overflow-hidden">
+                  <div className="p-6 border-b border-white/5">
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-white">TÓM TẮT ĐẶT VÉ</h3>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex gap-4 mb-8">
+                      <div className="w-16 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                        <img
+                          src={selectedMovie?.poster_url || "https://images.unsplash.com/photo-1596727147705-61a532a659bd?auto=format&fit=crop&q=80&w=400"}
+                          className="w-full h-full object-cover"
+                          alt="Movie Thumbnail"
+                        />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-white mb-1 truncate w-40">{selectedMovie?.title || "Chọn phim"}</h4>
+                        <p className="text-[10px] text-text-muted uppercase font-black mb-2">NOCTURNE CINEMAS</p>
+                        <p className={`text-[10px] flex items-center gap-1 font-bold ${selectedShowtime ? 'text-primary' : 'text-accent'}`}>
+                          <Clock size={10} /> {selectedShowtime ? new Date(selectedShowtime.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Chờ chọn suất'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 pt-4 border-t border-white/5">
+                      <div className="flex justify-between text-xs font-bold">
+                        <span className="text-text-muted">Ghế</span>
+                        <span className="text-white">{selectedSeat || '--'}</span>
+                      </div>
+                      <div className="flex justify-between text-xs font-bold">
+                        <span className="text-text-muted">Số vé</span>
+                        <span className="text-white">{selectedSeat ? '1' : '--'}</span>
+                      </div>
+                      <div className="flex justify-between items-end pt-2">
+                        <span className="text-lg font-bold text-white">Tổng cộng</span>
+                        <span className="text-2xl font-black text-accent">
+                          {selectedShowtime ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(selectedShowtime.price) : '0 ₫'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {selectedShowtime ? (
+                      <button
+                        onClick={() => {
+                          const form = document.querySelector('form');
+                          if(form) form.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="w-full mt-8 py-4 bg-primary text-white rounded-xl font-bold text-sm uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                      >
+                        {selectedSeat ? 'TIẾN HÀNH THANH TOÁN' : 'VUI LÒNG CHỌN GHẾ'}
+                      </button>
+                    ) : (
+                      <button className="w-full mt-8 py-4 bg-white/5 text-text-muted rounded-xl font-bold text-sm uppercase tracking-widest cursor-not-allowed border border-white/5">
+                        VUI LÒNG CHỌN SUẤT CHIẾU
+                      </button>
+                    )}
+                    <p className="text-center text-[9px] text-text-muted mt-4 font-bold uppercase tracking-widest">
+                      THUẾ VÀ PHÍ ĐƯỢC TÍNH KHI THANH TOÁN
+                    </p>
+                  </div>
+                </div>
+
+                {/* Exclusive Offer */}
+                <div className="bg-offer-bg rounded-2xl p-6 relative overflow-hidden group">
+                   <div className="relative z-10">
+                      <p className="text-[9px] font-black text-white/70 uppercase tracking-widest mb-2">ƯU ĐÃI ĐỘC QUYỀN</p>
+                      <h4 className="text-xl font-black text-white mb-3">Đêm Nhân Đôi Điểm Thưởng</h4>
+                      <p className="text-xs text-white/80 mb-6 leading-relaxed">
+                        Đặt bất kỳ suất chiếu IMAX nào hôm nay và nhận gấp đôi điểm thưởng Nocturne.
+                      </p>
+                      <button className="bg-white text-offer-bg px-4 py-2 rounded font-bold text-[10px] uppercase tracking-wider hover:bg-white/90 transition-all">
+                        TÌM HIỂU THÊM
+                      </button>
+                   </div>
+                   <div className="absolute -bottom-4 -right-4 opacity-20 group-hover:scale-110 transition-transform duration-700">
+                      <Ticket size={120} className="text-white rotate-12" />
+                   </div>
                 </div>
               </div>
             </div>
-          </section>
-        )}
+          </div>
+        </section>
       </main>
 
       {/* Footer */}
-      <footer className="bg-secondary/40 border-t border-white/5 py-16 mt-24 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-2xl font-black tracking-tighter italic mb-6">
-            <span className="text-white">NOCTURNE</span>
-            <span className="text-primary ml-1">CINEMAS</span>
-          </h2>
-          <p className="text-text-muted text-sm max-w-xl mx-auto mb-10 leading-relaxed">
-            Nâng tầm trải nghiệm điện ảnh của bạn với công nghệ tiên tiến và sự thoải mái tối đa. Khám phá phép màu của điện ảnh trong một góc nhìn hoàn toàn mới.
-          </p>
-          <div className="flex justify-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted border-t border-white/5 pt-10">
-            <span className="hover:text-primary cursor-pointer transition-colors">Điều khoản sử dụng</span>
-            <span className="hover:text-primary cursor-pointer transition-colors">Chính sách bảo mật</span>
-            <span className="hover:text-primary cursor-pointer transition-colors">Liên hệ</span>
+      <footer className="bg-bg-dark border-t border-white/5 py-20 mt-12">
+        <div className="max-w-7xl mx-auto px-10">
+          <div className="grid md:grid-cols-4 gap-12 mb-16">
+            <div className="col-span-2">
+              <h2 className="text-xl font-black tracking-tighter mb-6">
+                <span className="text-primary">NOCTURNE</span>
+                <span className="text-white ml-2">CINEMAS</span>
+              </h2>
+              <p className="text-text-muted text-sm max-w-sm mb-8 leading-relaxed font-medium">
+                Tái định nghĩa trải nghiệm điện ảnh thông qua không gian đắm chìm và dịch vụ cao cấp. Mỗi khung hình là một câu chuyện.
+              </p>
+              <div className="flex items-center gap-6">
+                <Volume2 size={20} className="text-text-muted hover:text-white cursor-pointer" />
+                <Film size={20} className="text-text-muted hover:text-white cursor-pointer" />
+                <Share2 size={20} className="text-text-muted hover:text-white cursor-pointer" />
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-xs font-black text-white uppercase tracking-widest mb-8">KHÁM PHÁ</h4>
+              <ul className="space-y-4 text-sm font-medium text-text-muted">
+                <li className="hover:text-primary cursor-pointer transition-colors">Sắp Chiếu</li>
+                <li className="hover:text-primary cursor-pointer transition-colors">Thẻ Quà Tặng</li>
+                <li className="hover:text-primary cursor-pointer transition-colors">Trải Nghiệm IMAX</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-xs font-black text-white uppercase tracking-widest mb-8">LIÊN HỆ</h4>
+              <ul className="space-y-4 text-sm font-medium text-text-muted">
+                <li className="hover:text-primary cursor-pointer transition-colors">Trung Tâm Hỗ Trợ</li>
+                <li className="hover:text-primary cursor-pointer transition-colors">Hợp Tác Kinh Doanh</li>
+                <li className="hover:text-primary cursor-pointer transition-colors">Chính Sách Bảo Mật</li>
+              </ul>
+            </div>
           </div>
-          <p className="mt-10 text-[9px] text-white/20 uppercase tracking-[0.3em]">© 2024 Hệ thống rạp chiếu phim Nocturne</p>
+
+          <div className="pt-12 border-t border-white/5 text-center">
+            <p className="text-[10px] text-text-muted font-black uppercase tracking-[0.2em]">
+              © 2024 NOCTURNE CINEMAS ENTERTAINMENT GROUP. BẢN QUYỀN ĐƯỢC BẢO LƯU.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
