@@ -1,19 +1,31 @@
-[Sat Apr 18 18:39:08 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
-[Sat Apr 18 18:39:13 2026] [::1]:52842 Accepted
-[Sat Apr 18 18:39:13 2026] [::1]:52842 [200]: GET /api/movies
-[Sat Apr 18 18:39:13 2026] [::1]:52842 Closing
-[Sat Apr 18 18:39:13 2026] [::1]:52850 Accepted
-[Sat Apr 18 18:39:13 2026] [::1]:52850 [200]: GET /api/movies
-[Sat Apr 18 18:39:13 2026] [::1]:52850 Closing
-[Sat Apr 18 18:39:16 2026] [::1]:52860 Accepted
-[Sat Apr 18 18:39:16 2026] [::1]:52860 [200]: GET /api/showtimes/1
-[Sat Apr 18 18:39:16 2026] [::1]:52860 Closing
-[Sat Apr 18 18:39:17 2026] [::1]:52866 Accepted
-[Sat Apr 18 18:39:17 2026] [::1]:52866 [200]: GET /api/bookings/1
-[Sat Apr 18 18:39:17 2026] [::1]:52866 Closing
-[Sat Apr 18 18:39:20 2026] [::1]:33562 Accepted
-[Sat Apr 18 18:39:20 2026] [::1]:33562 [200]: OPTIONS /api/bookings
-[Sat Apr 18 18:39:20 2026] [::1]:33562 Closing
-[Sat Apr 18 18:39:20 2026] [::1]:33570 Accepted
-[Sat Apr 18 18:39:20 2026] [::1]:33570 [201]: POST /api/bookings
-[Sat Apr 18 18:39:20 2026] [::1]:33570 Closing
+[Sun Apr 19 18:15:00 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Sun Apr 19 18:16:13 2026] [::1]:43382 Accepted
+[Sun Apr 19 18:16:13 2026] [::1]:43382 [200]: GET /api/movies
+[Sun Apr 19 18:16:13 2026] [::1]:43382 Closing
+[Sun Apr 19 18:16:13 2026] [::1]:43392 Accepted
+[Sun Apr 19 18:16:13 2026] [::1]:43392 [200]: GET /api/movies
+[Sun Apr 19 18:16:13 2026] [::1]:43392 Closing
+[Mon Apr 20 17:56:05 2026] [::1]:43612 Accepted
+[Mon Apr 20 17:56:05 2026] [::1]:43612 [200]: GET /api/movies
+[Mon Apr 20 17:56:05 2026] [::1]:43612 Closing
+[Mon Apr 20 17:56:05 2026] [::1]:43618 Accepted
+[Mon Apr 20 17:56:05 2026] [::1]:43618 [200]: GET /api/movies
+[Mon Apr 20 17:56:05 2026] [::1]:43618 Closing
+[Mon Apr 20 17:56:05 2026] [::1]:43628 Accepted
+[Mon Apr 20 17:56:05 2026] [::1]:43628 [200]: GET /api/showtimes/1
+[Mon Apr 20 17:56:05 2026] [::1]:43628 Closing
+[Mon Apr 20 17:56:05 2026] [::1]:43642 Accepted
+[Mon Apr 20 17:56:05 2026] [::1]:43642 [200]: GET /api/showtimes/1
+[Mon Apr 20 17:56:05 2026] [::1]:43642 Closing
+[Mon Apr 20 17:56:08 2026] [::1]:43644 Accepted
+[Mon Apr 20 17:56:08 2026] [::1]:43644 [200]: GET /api/showtimes/1
+[Mon Apr 20 17:56:08 2026] [::1]:43644 Closing
+[Mon Apr 20 17:56:09 2026] [::1]:53372 Accepted
+[Mon Apr 20 17:56:09 2026] [::1]:53372 [200]: GET /api/bookings/1
+[Mon Apr 20 17:56:09 2026] [::1]:53372 Closing
+[Mon Apr 20 17:56:12 2026] [::1]:53384 Accepted
+[Mon Apr 20 17:56:12 2026] [::1]:53384 [200]: OPTIONS /api/bookings
+[Mon Apr 20 17:56:12 2026] [::1]:53384 Closing
+[Mon Apr 20 17:56:12 2026] [::1]:53400 Accepted
+[Mon Apr 20 17:56:12 2026] [::1]:53400 [201]: POST /api/bookings
+[Mon Apr 20 17:56:12 2026] [::1]:53400 Closing

@@ -18,14 +18,11 @@ $app->add(new CorsMiddleware([
     "cache" => 0,
 ]));
 
-// MySQL Connection (XAMPP Default)
-$host = '127.0.0.1';
-$db_name = 'movie_booking';
-$username = 'root';
-$password = '';
+// SQLite Connection
+$db_file = __DIR__ . '/../movie_booking.sqlite';
 
 try {
-    $db = new PDO("mysql:host=$host;dbname=$db_name;charset=utf8", $username, $password);
+    $db = new PDO("sqlite:$db_file");
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
